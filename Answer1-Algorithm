@@ -1,0 +1,52 @@
+const int blockSize = 200;
+
+class NumArray {
+public:
+    vector<int> numArray;
+    vector<int> blockSum;
+    
+    NumArray(vector<int>& nums) {
+        numArray = nums;
+        blockSum.resize((nums.size() + blockSize - 1) / blockSize , 0);
+        for(int i = 0; i < nums.size(); i++){
+            blockSum[i / blockSize] += nums[i];
+        }
+    }
+    
+    void update(int index, int val) {
+        blockSum[index / blockSize] -= numArray[index];
+        blockSum[index/blockSize] += val;
+        numArray[index] = val;
+    }
+    
+    int sumRange(int left, int right) {
+        int leftId = left / blockSize;
+        int rightId = right / blockSize;
+        int ans = 0;
+        
+        if(leftId == rightId){
+            for(int i = left; i <= right; i++){
+                ans += numArray[i];
+            }
+        }
+        else {
+            for(int i = left; i <= (leftId + 1) * blockSize - 1; i++){
+                ans += numArray[i];
+            }
+            for(int i = leftId + 1; i <= rightId - 1; i++){
+                ans += blockSum[i];
+            }
+            for(int i = rightId * blockSize; i <= right; i++){
+                ans += numArray[i];
+            }
+        }
+        return ans;
+    }
+};
+
+/**
+ * Your NumArray object will be instantiated and called as such:
+ * NumArray* obj = new NumArray(nums);
+ * obj->update(index,val);
+ * int param_2 = obj->sumRange(left,right);
+ */
